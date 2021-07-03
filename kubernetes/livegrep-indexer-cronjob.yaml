@@ -7,7 +7,7 @@ metadata:
   name: livegrep-indexer
 spec:
   # Every 10 minutes starting at midnight
-  schedule: "0/10 * * * *"
+  schedule: "0/30 * * * *"
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 5
   jobTemplate:

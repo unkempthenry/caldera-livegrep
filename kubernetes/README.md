@@ -4,18 +4,18 @@
 kubectl deploy -f .
 ```
 
-Re-indexing happens on a cronjob every 10 minutes.
+Re-indexing happens on a cronjob every 30 minutes.
 
 ## Gotchas
 
 *Github API limits:*
 
-You can try cranking the cronjob lower than 10 minutes, but github
+You can try cranking the cronjob lower than 30 minutes, but github
 may start to rate limit you.
 
 *Broken until first cron runs:*
 
-Nothing will work until the indexing runs once (10 minute intervals every hour).
+Nothing will work until the indexing runs once (30 minute intervals every hour).
 You can try to manually trigger it:
 
 ```shell
