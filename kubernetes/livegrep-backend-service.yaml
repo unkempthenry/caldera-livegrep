@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: livegrep-backend
+spec:
+  ports:
+    - name: grpc
+      port: 9898
+      targetPort: 9898
+  selector:
+    livegrep.service: livegrep-backend

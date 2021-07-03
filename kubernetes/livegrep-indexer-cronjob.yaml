@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  creationTimestamp: null
+  labels:
+    livegrep.service: livegrep-indexer
+  name: livegrep-indexer
+spec:
+  # Every 10 minutes starting at midnight
+  schedule: "0/10 * * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          containers:
+            - args:
+                - /livegrep/bin/livegrep-github-reindex
+                - -name=Caldera
+                - -repo=mitre/caldera
+                - -repo=mitre/access
+                - -repo=mitre/atomic
+                - -repo=mitre/builder
+                - -repo=mitre/compass
+                - -repo=mitre/debrief
+                - -repo=mitre/emu
+                - -repo=mitre/fieldmanual
+                - -repo=mitre/gameboard
+                - -repo=mitre/human
+                - -repo=mitre/manx
+                - -repo=mitre/mock
+                - -repo=mitre/response
+                - -repo=mitre/sandcat
+                - -repo=mitre/ssl
+                - -repo=mitre/stockpile
+                - -repo=mitre/training
+                - -revparse=false
+                - -dir=/data/
+                - -out=/data/index.idx
+                - -http
+              image: docker.io/livegrep/indexer:latest
+              name: livegrep-indexer
+              resources: {}
+              volumeMounts:
+                - mountPath: /data
+                  name: livegrep-data
+          restartPolicy: Never
+          volumes:
+            - name: livegrep-data
+              persistentVolumeClaim:
+                claimName: livegrep-data

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livegrep-backend
+  labels:
+    livegrep.service: livegrep-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      livegrep.service: livegrep-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        livegrep.service: livegrep-backend
+    spec:
+      containers:
+        - args:
+            - /livegrep/bin/codesearch
+            - -grpc=0.0.0.0:9898
+            - -load_index=/data/index.idx
+            - -debug=profile,index
+            - -threads=4
+          image: docker.io/livegrep/base:latest
+          name: livegrep-backend
+          ports:
+            - name: grpc
+              containerPort: 9898
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: livegrep-data
+      restartPolicy: Always
+      volumes:
+        - name: livegrep-data
+          persistentVolumeClaim:
+            claimName: livegrep-data
+status: {}

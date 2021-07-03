@@ -1,0 +1,64 @@
+version: "3.3"
+services:
+  livegrep-indexer:
+    image: docker.io/livegrep/indexer:latest
+    command:
+     - /livegrep/bin/livegrep-github-reindex
+     - "-name=Caldera"
+     # Core
+     - -repo=mitre/caldera
+     # Plugins
+     - -repo=mitre/access
+     - -repo=mitre/atomic
+     - -repo=mitre/builder
+     - -repo=mitre/compass
+     - -repo=mitre/debrief
+     - -repo=mitre/emu
+     - -repo=mitre/fieldmanual
+     - -repo=mitre/gameboard
+     - -repo=mitre/human
+     - -repo=mitre/manx
+     - -repo=mitre/mock
+     - -repo=mitre/response
+     - -repo=mitre/sandcat
+     - -repo=mitre/ssl
+     - -repo=mitre/stockpile
+     - -repo=mitre/training
+
+     - -revparse=false
+     - -dir=/data/
+     - -out=/data/index.idx
+     - -http
+    volumes:
+     - livegrep-data:/data
+
+  livegrep-backend:
+    image: "docker.io/livegrep/base:latest"
+    command:
+      - "/livegrep/bin/codesearch"
+      - "-grpc=0.0.0.0:9898"
+      - "-load_index=/data/index.idx"
+      - "-debug=profile,index"
+      - "-threads=4"
+    # ports:
+      # - "9898:9898"
+    volumes:
+      - livegrep-data:/data
+    # restart: unless-stopped
+    restart: always
+  livegrep-frontend:
+    image: "docker.io/livegrep/base:latest"
+    command:
+      - "/livegrep/bin/livegrep"
+      - "-docroot"
+      - "/livegrep/web/"
+      - "-listen=0.0.0.0:8910"
+      - "-connect=livegrep-backend:9898"
+      # - "/conf/livegrep.json"
+    ports:
+      - "8910:8910"
+    # restart: unless-stopped
+    restart: always
+
+volumes:
+  livegrep-data: {}

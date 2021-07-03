@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    livegrep.service: livegrep-frontend
+  name: livegrep-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      livegrep.service: livegrep-frontend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        livegrep.service: livegrep-frontend
+    spec:
+      containers:
+        - args:
+            - /livegrep/bin/livegrep
+            - -docroot
+            - /livegrep/web/
+            - -listen=0.0.0.0:8910
+            - -connect=livegrep-backend:9898
+          image: docker.io/livegrep/base:latest
+          name: livegrep-frontend
+          ports:
+            - containerPort: 8910
+          resources: {}
+      restartPolicy: Always
+status: {}
